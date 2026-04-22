@@ -137,7 +137,8 @@ def checkin():
             category_info = get_participation_category(person)
 
         else:
-            now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            from datetime import datetime, timedelta
+            checkin_time = (datetime.utcnow() + timedelta(hours=9)).strftime("%Y-%m-%d %H:%M:%S")
             cur.execute("""
                 UPDATE participants
                 SET checked_in = 1, checkin_time = ?
