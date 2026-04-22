@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background: #f5f5f5;
+        }
+    </style>
+</head>
+<body>
+    <h1>管理画面</h1>
+    <p>参加者総数: {{ total }}</p>
+    <p>チェックイン済み: {{ checked }}</p>
+    <p>未チェックイン: {{ unchecked }}</p>
+
+    <p><a href="/reset">全員のチェックイン状態をリセット</a></p>
+
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Affiliation</th>
+            <th>Checked In</th>
+            <th>Check-in Time</th>
+        </tr>
+        {% for p in participants %}
+        <tr>
+            <td>{{ p["id"] }}</td>
+            <td>{{ p["name"] }}</td>
+            <td>{{ p["email"] }}</td>
+            <td>{{ p["affiliation"] }}</td>
+            <td>{{ "Yes" if p["checked_in"] == 1 else "No" }}</td>
+            <td>{{ p["checkin_time"] if p["checkin_time"] else "" }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

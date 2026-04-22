@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="{{ language }}">
+<head>
+    <meta charset="UTF-8">
+    <title>ISPC 2026 Check-in</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 700px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+        input, button {
+            font-size: 16px;
+            padding: 10px;
+            margin-top: 10px;
+        }
+        .message {
+            margin-top: 20px;
+            padding: 12px;
+            border: 1px solid #ccc;
+        }
+        .lang {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="lang">
+        <a href="/?lang=ja">日本語</a> |
+        <a href="/?lang=en">English</a>
+    </div>
+
+    {% if language == "ja" %}
+        <h1>ISPC 2026 受付チェックイン</h1>
+        <p>参加者ID・メールアドレス・氏名のいずれかを入力してください。</p>
+    {% else %}
+        <h1>ISPC 2026 Check-in</h1>
+        <p>Please enter participant ID, email, or name.</p>
+    {% endif %}
+
+    <form method="POST">
+        <input type="text" name="keyword" style="width: 100%;" required>
+        <br>
+        {% if language == "ja" %}
+            <button type="submit">チェックイン</button>
+        {% else %}
+            <button type="submit">Check in</button>
+        {% endif %}
+    </form>
+
+    {% if message %}
+        <div class="message">{{ message }}</div>
+    {% endif %}
+</body>
+</html>
