@@ -19,13 +19,37 @@
             margin-top: 20px;
             padding: 12px;
             border: 1px solid #ccc;
+            border-radius: 8px;
+            background: #fafafa;
         }
         .lang {
             margin-bottom: 20px;
         }
+        .card {
+            margin-top: 30px;
+            padding: 28px;
+            border-radius: 16px;
+            border: 4px solid #333;
+            text-align: center;
+        }
+        .category {
+            font-size: 42px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .info {
+            font-size: 20px;
+            margin: 10px 0;
+        }
+        .hint {
+            margin-top: 25px;
+            font-size: 22px;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
+
     <div class="lang">
         <a href="/?lang=ja">日本語</a> |
         <a href="/?lang=en">English</a>
@@ -52,5 +76,61 @@
     {% if message %}
         <div class="message">{{ message }}</div>
     {% endif %}
+
+    {% if person_info %}
+    <div class="card" style="background-color: {{ category_info['color'] if category_info else '#ffffff' }};">
+
+        <!-- 大标题 -->
+        <div class="category">
+            {% if language == "ja" %}
+                {{ category_info["label_ja"] if category_info else "チェックイン完了" }}
+            {% else %}
+                {{ category_info["label"] if category_info else "CHECKED IN" }}
+            {% endif %}
+        </div>
+
+        <!-- 基本信息 -->
+        {% if language == "ja" %}
+            <div class="info"><strong>氏名:</strong> {{ person_info["name"] }}</div>
+            <div class="info"><strong>所属:</strong> {{ person_info["affiliation"] }}</div>
+
+            <div class="info">
+                <strong>昼食:</strong>
+                {% if person_info["lunch"] in ["参加", "Yes", "yes"] %}
+                    参加
+                {% else %}
+                    不参加
+                {% endif %}
+            </div>
+
+            <div class="info"><strong>ID:</strong> {{ person_info["id"] }}</div>
+        {% else %}
+            <div class="info"><strong>Name:</strong> {{ person_info["name"] }}</div>
+            <div class="info"><strong>Affiliation:</strong> {{ person_info["affiliation"] }}</div>
+
+            <div class="info">
+                <strong>Lunch:</strong>
+                {% if person_info["lunch"] in ["参加", "Yes", "yes"] %}
+                    Yes
+                {% else %}
+                    No
+                {% endif %}
+            </div>
+
+            <div class="info"><strong>ID:</strong> {{ person_info["id"] }}</div>
+        {% endif %}
+
+        <!-- 提示 -->
+        <div class="hint">
+            {% if language == "ja" %}
+                この画面をスタッフにお見せください
+            {% else %}
+                Please show this screen to staff
+            {% endif %}
+        </div>
+
+    </div>
+{% endif %}
+
 </body>
 </html>
