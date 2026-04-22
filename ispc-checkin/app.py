@@ -18,6 +18,7 @@ def init_db():
     conn = get_connection()
     cur = conn.cursor()
 
+    cur.execute("DROP TABLE IF EXISTS participants")
     cur.execute("""
     CREATE TABLE IF NOT EXISTS participants (
         id TEXT PRIMARY KEY,
@@ -36,14 +37,13 @@ def init_db():
     conn.commit()
     conn.close()
 
-def import_csv_if_needed():
+def import_csv():
     conn = get_connection()
     cur = conn.cursor()
 
     cur.execute("SELECT COUNT(*) FROM participants")
     count = cur.fetchone()[0]
 
-    if count == 0 and os.path.exists(CSV_PATH):
         df = pd.read_csv(CSV_PATH).fillna("")
         for _, row in df.iterrows():
             cur.execute("""
@@ -146,5 +146,6 @@ def reset():
 
 if __name__ == "__main__":
     init_db()
-    import_csv_if_needed()
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    import_csv()
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=False)
