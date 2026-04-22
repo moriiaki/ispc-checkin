@@ -36,6 +36,10 @@
             <th>Name</th>
             <th>Email</th>
             <th>Affiliation</th>
+            <th>Role</th>
+            <th>Lunch</th>
+            <th>Dinner</th>
+            <th>Excursion</th>
             <th>Checked In</th>
             <th>Check-in Time</th>
         </tr>
@@ -45,6 +49,10 @@
             <td>{{ p["name"] }}</td>
             <td>{{ p["email"] }}</td>
             <td>{{ p["affiliation"] }}</td>
+            <td>{{ p["role"] }}</td>
+            <td>{{ p["lunch"] }}</td>
+            <td>{{ p["dinner"] }}</td>
+            <td>{{ p["excursion"] }}</td>
             <td>{{ "Yes" if p["checked_in"] == 1 else "No" }}</td>
             <td>{{ p["checkin_time"] if p["checkin_time"] else "" }}</td>
         </tr>
