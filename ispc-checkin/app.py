@@ -24,6 +24,10 @@ def init_db():
         name TEXT,
         email TEXT,
         affiliation TEXT,
+        role TEXT,
+        lunch TEXT,
+        dinnerTEXT,
+        excursion TEXT,
         checked_in INTEGER DEFAULT 0,
         checkin_time TEXT
     )
@@ -43,13 +47,17 @@ def import_csv_if_needed():
         df = pd.read_csv(CSV_PATH).fillna("")
         for _, row in df.iterrows():
             cur.execute("""
-                INSERT OR REPLACE INTO participants (id, name, email, affiliation, checked_in, checkin_time)
+                INSERT OR REPLACE INTO participants (id, name, email, affiliation, role, lunch, dinner, excursion, checked_in, checkin_time)
                 VALUES (?, ?, ?, ?, 0, NULL)
             """, (
                 str(row["id"]),
                 str(row["name"]),
                 str(row["email"]),
-                str(row["affiliation"])
+                str(row["affiliation"]),
+                str(row["role"]),
+                str(row["lunch"]),
+                str(row["dinner"]),
+                str(row["excursion"])
             ))
         conn.commit()
 
