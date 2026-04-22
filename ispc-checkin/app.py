@@ -67,10 +67,43 @@ def import_csv():
     conn.commit()
     conn.close()
 
+def get_participation_category(person):
+    dinner = str(person["dinner"]).strip()
+    excursion = str(person["excursion"]).strip()
+
+    dinner_yes = dinner in ["参加", "Yes", "yes", "YES"]
+    excursion_yes = excursion in ["参加", "Yes", "yes", "YES"]
+
+    if not dinner_yes and not excursion_yes:
+        return {
+            "label": "SESSION ONLY",
+            "label_ja": "セッションのみ",
+            "color": "#d9d9d9"
+        }
+    elif dinner_yes and not excursion_yes:
+        return {
+            "label": "SESSION + DINNER",
+            "label_ja": "セッション＋レセプション",
+            "color": "#ffe699"
+        }
+    elif dinner_yes and excursion_yes:
+        return {
+            "label": "SESSION + DINNER + EXCURSION",
+            "label_ja": "セッション＋レセプション＋エクスカーション",
+            "color": "#a9d18e"
+        }
+    elif not dinner_yes and excursion_yes:
+        return {
+            "label": "SESSION + EXCURSION",
+            "label_ja": "セッション＋エクスカーション",
+            "color": "#9dc3e6"
+        }
 
 @app.route("/", methods=["GET", "POST"])
 def checkin():
     message = None
+    person_info = None
+    category_info = None
     language = request.args.get("lang", "ja")
 
     if request.method == "POST":
@@ -94,11 +127,15 @@ def checkin():
                 "ja": "該当する参加者が見つかりませんでした。",
                 "en": "Participant not found."
             }[language]
+
         elif person["checked_in"] == 1:
             message = {
                 "ja": f"{person['name']} さんは既にチェックイン済みです。",
                 "en": f"{person['name']} has already checked in."
             }[language]
+            person_info = person
+            category_info = get_participation_category(person)
+
         else:
             now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             cur.execute("""
@@ -107,14 +144,26 @@ def checkin():
                 WHERE id = ?
             """, (now, person["id"]))
             conn.commit()
+
+            cur.execute("SELECT * FROM participants WHERE id = ?", (person["id"],))
+            updated_person = cur.fetchone()
+
             message = {
-                "ja": f"{person['name']} さんのチェックインが完了しました。",
-                "en": f"Check-in completed for {person['name']}."
+                "ja": f"{updated_person['name']} さんのチェックインが完了しました。",
+                "en": f"Check-in completed for {updated_person['name']}."
             }[language]
+            person_info = updated_person
+            category_info = get_participation_category(updated_person)
 
         conn.close()
 
-    return render_template("checkin.html", message=message, language=language)
+    return render_template(
+    "checkin.html",
+    message=message,
+    language=language,
+    person_info=person_info,
+    category_info=category_info
+)
 
 
 @app.route("/admin")
