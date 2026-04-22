@@ -143,7 +143,7 @@ def checkin():
                 UPDATE participants
                 SET checked_in = 1, checkin_time = ?
                 WHERE id = ?
-            """, (now, person["id"]))
+            """, (checkin_time, person["id"]))
             conn.commit()
 
             cur.execute("SELECT * FROM participants WHERE id = ?", (person["id"],))
