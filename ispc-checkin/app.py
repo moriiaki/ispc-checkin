@@ -9,10 +9,12 @@ app = Flask(__name__)
 DB_PATH = "participants.db"
 CSV_PATH = "participants.csv"
 
+
 def get_connection():
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     return conn
+
 
 def init_db():
     conn = get_connection()
@@ -20,14 +22,14 @@ def init_db():
 
     cur.execute("DROP TABLE IF EXISTS participants")
     cur.execute("""
-    CREATE TABLE IF NOT EXISTS participants (
+    CREATE TABLE participants (
         id TEXT PRIMARY KEY,
         name TEXT,
         email TEXT,
         affiliation TEXT,
         role TEXT,
         lunch TEXT,
-        dinnerTEXT,
+        dinner TEXT,
         excursion TEXT,
         checked_in INTEGER DEFAULT 0,
         checkin_time TEXT
@@ -37,31 +39,34 @@ def init_db():
     conn.commit()
     conn.close()
 
+
 def import_csv():
     conn = get_connection()
     cur = conn.cursor()
 
-    cur.execute("SELECT COUNT(*) FROM participants")
-    count = cur.fetchone()[0]
+    df = pd.read_csv(CSV_PATH).fillna("")
 
-        df = pd.read_csv(CSV_PATH).fillna("")
-        for _, row in df.iterrows():
-            cur.execute("""
-                INSERT OR REPLACE INTO participants (id, name, email, affiliation, role, lunch, dinner, excursion, checked_in, checkin_time)
-                VALUES (?, ?, ?, ?, 0, NULL)
-            """, (
-                str(row["id"]),
-                str(row["name"]),
-                str(row["email"]),
-                str(row["affiliation"]),
-                str(row["role"]),
-                str(row["lunch"]),
-                str(row["dinner"]),
-                str(row["excursion"])
-            ))
-        conn.commit()
+    for _, row in df.iterrows():
+        cur.execute("""
+            INSERT OR REPLACE INTO participants
+            (id, name, email, affiliation, role, lunch, dinner, excursion, checked_in, checkin_time)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (
+            str(row["id"]),
+            str(row["name"]),
+            str(row["email"]),
+            str(row["affiliation"]),
+            str(row["role"]),
+            str(row["lunch"]),
+            str(row["dinner"]),
+            str(row["excursion"]),
+            0,
+            None
+        ))
 
+    conn.commit()
     conn.close()
+
 
 @app.route("/", methods=["GET", "POST"])
 def checkin():
@@ -111,6 +116,7 @@ def checkin():
 
     return render_template("checkin.html", message=message, language=language)
 
+
 @app.route("/admin")
 def admin():
     conn = get_connection()
@@ -135,6 +141,7 @@ def admin():
         participants=participants
     )
 
+
 @app.route("/reset")
 def reset():
     conn = get_connection()
@@ -143,6 +150,7 @@ def reset():
     conn.commit()
     conn.close()
     return redirect(url_for("admin"))
+
 
 if __name__ == "__main__":
     init_db()
